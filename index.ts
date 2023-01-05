@@ -25,18 +25,31 @@ export function createEndpointsAndModels(target_dir: string, ...swaggers: any[])
                     .toLowerCase()
                 }`;
                 let endpointMethod = method.toUpperCase();
-                const args = `${parseArgsTypes(swaggerEndpoints[method].parameters ?? [])}`;
-                const argsString = `${args ? "args : { " + args.trim() + " }" : ""}`;
-                const {returnTypeOfApiCall, importStatement} = getReturnTypeOfApiCall(swaggerEndpoints[method]?.responses?? {});
 
-                if(!imports.includes(importStatement)) imports += importStatement;
+                const args = `${parseParamTypes(swaggerEndpoints[method].parameters ?? [], "path")}`;
+                const argsString = `${args ? "args: { " + args.trim() + " }" : ""}`;
+
+                const queryArgs = `${parseParamTypes(swaggerEndpoints[method].parameters ?? [], "query")}`;
+                const queryArgsString = `${queryArgs ? "data: { " + queryArgs.trim() + " }" : ""}`;
+
+
+                const {dataType: reqTypeOfApiCall, importStatement: reqImportStatement, isNullable: reqIsNullable} = getReqResTypeOfApiCall(swaggerEndpoints[method]?.requestBody?? {});
+                const {dataType: returnTypeOfApiCall, importStatement: resImportStatement, isNullable: resIsNullable} = getReqResTypeOfApiCall(swaggerEndpoints[method]?.responses?? {});
+
+                const callDataParam = reqTypeOfApiCall == "void" ? queryArgsString === "" ? "" : queryArgsString : `data${reqIsNullable? "?" : ""}: ${reqTypeOfApiCall}`;
+                const resDataType = returnTypeOfApiCall == "void" ? "void" : `${returnTypeOfApiCall}${resIsNullable? " | null | undefined" : ""}`;
+
+
+
+                if(!imports.includes(reqImportStatement)) imports += reqImportStatement;
+                if(!imports.includes(resImportStatement)) imports += resImportStatement;
 
                 classDefinition += `    static ${endpointName} = class {\n`
                     + `        static method: requestMethod = "${endpointMethod}";\n`
                     + `        static getUrl = (${argsString}) => \`${endpointUrl.replace(/{/g, "${args.")}\`;\n`
-                    + `        static call = async (${argsString ? argsString + ", " : ""}data?: any, onError?: false | ((error: any) => void)) : Promise<AxiosResponse<${returnTypeOfApiCall}, any>> => {\n`
+                    + `        static call = async (${argsString ? argsString + ", " : ""}${callDataParam === "" ? "" : callDataParam + ", "}onError?: false | ((error: any) => void)) : Promise<AxiosResponse<${resDataType}, any>> => {\n`
                     + `            const url = new URL(this.getUrl(${argsString ? "args" : ""}), baseUrl).toString();\n`
-                    + `            return await CallApi<${returnTypeOfApiCall}>(url, this.method, data, onError);\n`
+                    + `            return await CallApi<${resDataType}>(url, this.method,${callDataParam === "" ? "" : " data,"} onError);\n`
                     + `        }\n`
                     + `    }\n`;
             }
@@ -49,9 +62,12 @@ export function createEndpointsAndModels(target_dir: string, ...swaggers: any[])
     generateTypeScriptInterfacesForDtoModels(path.join(target_dir, "models"), ...components);
 }
 
-function parseArgsTypes(parameters: any[]) {
+function parseParamTypes(parameters: any[], paramType: "query" | "path") {
     let args = "";
     for (const parameter of parameters) {
+        if (paramType === "query" && parameter.in === "path") continue;
+        if (paramType === "path" && parameter.in === "query") continue;
+
         let type = parameter.schema.type;
         if (type === "integer") {
             type = "number";
@@ -122,35 +138,40 @@ function generateTypeScriptInterfacesForDtoModels(modelsDir: string, ...componen
     }
 }
 
-const getReturnTypeOfApiCall = (responses: any) => {
+const getReqResTypeOfApiCall = (reqsRes: any) => {
     let importStatement = '';
-    const response = responses["200"] ?? responses["201"] ?? responses["204"] ?? null;
+    const response = reqsRes["200"] ?? reqsRes["201"] ?? reqsRes["204"] ?? reqsRes;
+
     if (response?.content) {
-        const schema:any = response?.content['application/json'].schema;
+        const schema: any = response?.content?.['application/json']?.schema;
+        if (!schema) return {dataType: "any", importStatement: "", isNullable: false};
+
         if (schema.$ref) {
             const ref = schema.$ref.split('/').pop();
-            const retType = ref[0].toUpperCase() + ref.slice(1);
+            const retType = `${ref[0].toUpperCase() + ref.slice(1)}`;
             importStatement = `import { ${retType} } from './models/${retType}';\n`;
-            return {returnTypeOfApiCall: retType, importStatement};
+            return {dataType: retType, importStatement, isNullable: schema.nullable};
         } else if (schema.type === 'array') {
             const items = schema.items;
             if (items.$ref) {
                 const ref = items.$ref.split('/').pop();
                 const retType = `${ref[0].toUpperCase() + ref.slice(1)}[]`;
                 importStatement = `import { ${ref[0].toUpperCase() + ref.slice(1)} } from './models/${ref[0].toUpperCase() + ref.slice(1)}';\n`;
-                return {returnTypeOfApiCall: retType, importStatement};
+                return {dataType: retType, importStatement, isNullable: schema.nullable};
             } else if (items.type === 'integer') {
-                return {returnTypeOfApiCall: 'number[]', importStatement};
+                const retType = `number[]`;
+                return {dataType: retType, importStatement, isNullable: schema.nullable};
             } else {
-                return {returnTypeOfApiCall: `${items.type}[]`, importStatement};
+                const retType = `${items.type}[]`;
+                return {dataType: retType, importStatement, isNullable: schema.nullable};
             }
         } else if (schema.type === 'integer') {
-            return {returnTypeOfApiCall: 'number', importStatement};
+            return {dataType: 'number', importStatement, isNullable: schema.nullable};
         } else {
-            return {returnTypeOfApiCall: schema.type, importStatement};
+            return {dataType: schema.type, importStatement, isNullable: schema.nullable};
         }
     }
-    return {returnTypeOfApiCall: 'void', importStatement};
+    return {dataType: 'void', importStatement, isNullable: false};
 }
 
 const template_string: string = `// This file is generated using automated tool provided by NightmareGaurav (https://github.com/nightmaregaurav)
@@ -193,5 +214,8 @@ export class endpoints {
 `;
 
 // Usage Example
-// import swagger from './swagger.json';
-// createEndpointsAndModels("./endpoints", swagger);
+import swagger from './swagger.json';
+import swagger1 from './swagger1.json';
+import swagger2 from './swagger2.json';
+import swagger3 from './swagger3.json';
+createEndpointsAndModels("./endpoints", swagger, swagger1, swagger2, swagger3);
