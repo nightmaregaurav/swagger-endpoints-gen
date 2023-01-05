@@ -4,7 +4,7 @@
     "typescript": "^4.9.4"
   },
   "name": "@nightmaregaurav/swagger-auto-endpoints-and-models-mapper-ts",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Automatically generate typescript models from swagger.json schemas and endpoints from paths and methods so api call is as simple as writing endpoints.API__GET__my_object.call({data:value});",
   "main": "index.js",
   "repository": {
