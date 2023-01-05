@@ -214,8 +214,8 @@ export class endpoints {
 `;
 
 // Usage Example
-import swagger from './swagger.json';
-import swagger1 from './swagger1.json';
-import swagger2 from './swagger2.json';
-import swagger3 from './swagger3.json';
-createEndpointsAndModels("./endpoints", swagger, swagger1, swagger2, swagger3);
+// import swagger from './swagger.json';
+// import swagger1 from './swagger1.json';
+// import swagger2 from './swagger2.json';
+// import swagger3 from './swagger3.json';
+// createEndpointsAndModels("./endpoints", swagger, swagger1, swagger2, swagger3);
