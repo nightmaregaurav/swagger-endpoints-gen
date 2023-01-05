@@ -5,11 +5,8 @@
   },
   "name": "@nightmaregaurav/swagger-auto-endpoints-and-models-mapper-ts",
   "version": "1.0.0",
-  "description": "Automtically generate typescript models from swagger.json's schemas and endpoints from paths and methods so api call is as simple as writing endpoints.API__GET__my_object.call({data:value});",
+  "description": "Automatically generate typescript models from swagger.json schemas and endpoints from paths and methods so api call is as simple as writing endpoints.API__GET__my_object.call({data:value});",
   "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/nightmaregaurav/swagger-auto-endpoints-and-models-mapper-ts.git"
