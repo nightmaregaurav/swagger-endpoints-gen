@@ -1,9 +1,12 @@
 ## Swagger Endpoints Generator (Ts/Js)
+[![npm version](https://badge.fury.io/js/@nightmaregaurav%2Fswagger-endpoints-gen.svg)](https://badge.fury.io/js/@nightmaregaurav%2Fswagger-endpoints-gen)   [![HitCount](https://hits.dwyl.com/nightmaregaurav/swagger-endpoints-gen.svg?style=flat)](http://hits.dwyl.com/nightmaregaurav/swagger-endpoints-gen) 
 ***
 ### Description
 Automatically generate typescript models and endpoints from `swagger.json` so api call is as simple as writing `endpoints.API__GET__my_object.call({data:value});`
 
 ### Installation
+[![NPM](https://nodei.co/npm/@nightmaregaurav/swagger-endpoints-gen.png?mini=true)](https://nodei.co/npm/@nightmaregaurav/swagger-endpoints-gen/)
+
 `npm install -D @nightmaregaurav/swagger-endpoints-gen`
 
 ### Usage
