@@ -12,7 +12,7 @@ npm install -g @nightmaregaurav/swagger-endpoints-gen
 ```
 install swagger-endpoints-gen locally as dev dependency
 ```bash
-`npm install -D @nightmaregaurav/swagger-endpoints-gen`
+npm install -D @nightmaregaurav/swagger-endpoints-gen
 ````
 
 ### Usage
