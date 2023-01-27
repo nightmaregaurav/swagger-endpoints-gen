@@ -1,8 +1,9 @@
 export type GeneratorOptions = {
     outDir: string;
-    bearerTokenAndLoginRedirectImportPath: string | undefined;
-    baseUrl: string | undefined;
-    swaggers: any[] | undefined;
-    swaggerUrls: string[] | undefined;
+    bearerTokenAndLoginRedirectImportPath?: string;
+    baseUrl?: string;
+    swaggers?: any[];
+    swaggerUrls?: string[];
+    removeComments?: boolean;
 };
 export declare function createEndpointsAndModels(options: GeneratorOptions): Promise<void>;
