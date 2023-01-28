@@ -25,14 +25,16 @@ Contents of `in.json`:
     "baseUrl": "http://base.url.system",
     "bearerTokenAndLoginRedirectImportPath": "@/services/authService",
     "swaggers": [],
-    "swaggerUrls": ["http://base.url.system/swagger/v1/swagger.json"]
+    "swaggerUrls": ["http://base.url.system/swagger/v1/swagger.json"],
+    "removeComments": true
   },
   {
     "outDir": "/path/to/output/folder2",
     "baseUrl": "http://base.url.system",
     "bearerTokenAndLoginRedirectImportPath": "@/services/authService",
     "swaggers": [],
-    "swaggerUrls": ["http://base.url.system/swagger/v1/swagger2.json"]
+    "swaggerUrls": ["http://base.url.system/swagger/v1/swagger2.json"],
+    "removeComments": false
   }
 ]
 ```
@@ -53,7 +55,8 @@ createEndpointsAndModels({
     bearerTokenAndLoginRedirectImportPath: "./auth/authHelpers",
     baseUrl: "https://api.example.com",
     swaggers: [swagger1, swagger2, swagger3, swagger4],
-    swaggerUrls: ["https://api.example.com/swagger/v1/swagger.json", "https://api.example.com/swagger/v2/swagger.json", "https://api.example.com/swagger/v3/swagger.json"]
+    swaggerUrls: ["https://api.example.com/swagger/v1/swagger.json", "https://api.example.com/swagger/v2/swagger.json", "https://api.example.com/swagger/v3/swagger.json"],
+    "removeComments": true
 });
 ```
 
