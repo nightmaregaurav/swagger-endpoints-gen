@@ -54,15 +54,14 @@ export async function createEndpointsAndModels(options: GeneratorOptions) {
                 const argsString = `${args ? "args: { " + args.trim() + " }" : ""}`;
 
                 const queryArgs = `${parseParamTypes(swaggerEndpoints[method].parameters ?? [], "query")}`;
-                const queryArgsString = `${queryArgs ? "data: { " + queryArgs.trim() + " }" : ""}`;
+                const queryArgsString = `${queryArgs ? "params: { " + queryArgs.trim() + " }" : ""}`;
 
 
                 const {dataType: reqTypeOfApiCall, importStatement: reqImportStatement, isNullable: reqIsNullable} = getReqResTypeOfApiCall(swaggerEndpoints[method]?.requestBody?? {});
                 const {dataType: returnTypeOfApiCall, importStatement: resImportStatement, isNullable: resIsNullable} = getReqResTypeOfApiCall(swaggerEndpoints[method]?.responses?? {});
 
-                const callDataParam = reqTypeOfApiCall == "void" ? queryArgsString === "" ? "" : queryArgsString : `data${reqIsNullable? "?" : ""}: ${reqTypeOfApiCall}`;
+                const callDataParam = reqTypeOfApiCall == "void" ? "" : `data${reqIsNullable? "?" : ""}: ${reqTypeOfApiCall}`;
                 const resDataType = returnTypeOfApiCall == "void" ? "void" : `${returnTypeOfApiCall}${resIsNullable? " | null | undefined" : ""}`;
-
 
 
                 if(!imports.includes(reqImportStatement)) imports += reqImportStatement;
@@ -71,9 +70,9 @@ export async function createEndpointsAndModels(options: GeneratorOptions) {
                 classDefinition += `    static ${endpointName} = class {\n`
                     + `        static method: requestMethod = "${endpointMethod}";\n`
                     + `        static getUrl = (${argsString}) => \`${endpointUrl.replace(/{/g, "${args.")}\`;\n`
-                    + `        static call = async (${argsString ? argsString + ", " : ""}${callDataParam === "" ? "" : callDataParam + ", "}onError?: false | ((error: any) => void)) : Promise<AxiosResponse<${resDataType}, any>> => {\n`
+                    + `        static call = async (${argsString ? argsString + ", " : ""}${callDataParam === "" ? "" : callDataParam + ", "}${queryArgsString === "" ? "" : queryArgsString + ", "}onError?: false | ((error: any) => void)) : Promise<AxiosResponse<${resDataType}, any>> => {\n`
                     + `            const url = new URL(this.getUrl(${argsString ? "args" : ""}), baseUrl).toString();\n`
-                    + `            return await CallApi<${resDataType}>(url, this.method,${callDataParam === "" ? "" : " data,"} onError);\n`
+                    + `            return await CallApi<${resDataType}>(url, this.method, ${callDataParam === "" ? "" : "data, "}${queryArgsString === "" ? "" : " params, "}onError);\n`
                     + `        }\n`
                     + `    }\n`;
             }
@@ -218,7 +217,7 @@ export const baseUrl: string = "<<BASE_URL>>";
 
 export type requestMethod = "GET" | "POST" | "PUT" | "DELETE";
 
-async function CallApi<TResponse>(url: string, method: string, data?: any, onError?: false | ((error: any) => void)) : Promise<AxiosResponse<TResponse, any>> {
+async function CallApi<TResponse>(url: string, method: string, params?: any, data?: any, onError?: false | ((error: any) => void)) : Promise<AxiosResponse<TResponse, any>> {
     const token = getBearerToken();
     const headers = {'Authorization': \`Bearer ${"${token}"}\`}
 
@@ -226,6 +225,7 @@ async function CallApi<TResponse>(url: string, method: string, data?: any, onErr
         method: method as Method,
         url: url,
         data: data,
+        params: params,
         headers: headers
     };
     const axiosInstance = axios.create({baseURL: baseUrl})
