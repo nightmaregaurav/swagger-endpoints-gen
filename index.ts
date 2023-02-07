@@ -72,7 +72,7 @@ export async function createEndpointsAndModels(options: GeneratorOptions) {
                     + `        static getUrl = (${argsString}) => \`${endpointUrl.replace(/{/g, "${args.")}\`;\n`
                     + `        static call = async (${argsString ? argsString + ", " : ""}${callDataParam === "" ? "" : callDataParam + ", "}${queryArgsString === "" ? "" : queryArgsString + ", "}onError?: false | ((error: any) => void)) : Promise<AxiosResponse<${resDataType}, any>> => {\n`
                     + `            const url = new URL(this.getUrl(${argsString ? "args" : ""}), baseUrl).toString();\n`
-                    + `            return await CallApi<${resDataType}>(url, this.method, ${callDataParam === "" ? "" : "data, "}${queryArgsString === "" ? "" : " params, "}onError);\n`
+                    + `            return await CallApi<${resDataType}>(url, this.method, ${callDataParam === "" ? "null" : "data"}, ${queryArgsString === "" ? "null" : " params"}, onError);\n`
                     + `        }\n`
                     + `    }\n`;
             }
