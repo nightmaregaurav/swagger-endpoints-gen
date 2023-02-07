@@ -63,10 +63,10 @@ async function createEndpointsAndModels(options) {
                 const args = `${parseParamTypes((_b = swaggerEndpoints[method].parameters) !== null && _b !== void 0 ? _b : [], "path")}`;
                 const argsString = `${args ? "args: { " + args.trim() + " }" : ""}`;
                 const queryArgs = `${parseParamTypes((_c = swaggerEndpoints[method].parameters) !== null && _c !== void 0 ? _c : [], "query")}`;
-                const queryArgsString = `${queryArgs ? "data: { " + queryArgs.trim() + " }" : ""}`;
+                const queryArgsString = `${queryArgs ? "params: { " + queryArgs.trim() + " }" : ""}`;
                 const { dataType: reqTypeOfApiCall, importStatement: reqImportStatement, isNullable: reqIsNullable } = getReqResTypeOfApiCall((_e = (_d = swaggerEndpoints[method]) === null || _d === void 0 ? void 0 : _d.requestBody) !== null && _e !== void 0 ? _e : {});
                 const { dataType: returnTypeOfApiCall, importStatement: resImportStatement, isNullable: resIsNullable } = getReqResTypeOfApiCall((_g = (_f = swaggerEndpoints[method]) === null || _f === void 0 ? void 0 : _f.responses) !== null && _g !== void 0 ? _g : {});
-                const callDataParam = reqTypeOfApiCall == "void" ? queryArgsString === "" ? "" : queryArgsString : `data${reqIsNullable ? "?" : ""}: ${reqTypeOfApiCall}`;
+                const callDataParam = reqTypeOfApiCall == "void" ? "" : `data${reqIsNullable ? "?" : ""}: ${reqTypeOfApiCall}`;
                 const resDataType = returnTypeOfApiCall == "void" ? "void" : `${returnTypeOfApiCall}${resIsNullable ? " | null | undefined" : ""}`;
                 if (!imports.includes(reqImportStatement))
                     imports += reqImportStatement;
@@ -75,9 +75,9 @@ async function createEndpointsAndModels(options) {
                 classDefinition += `    static ${endpointName} = class {\n`
                     + `        static method: requestMethod = "${endpointMethod}";\n`
                     + `        static getUrl = (${argsString}) => \`${endpointUrl.replace(/{/g, "${args.")}\`;\n`
-                    + `        static call = async (${argsString ? argsString + ", " : ""}${callDataParam === "" ? "" : callDataParam + ", "}onError?: false | ((error: any) => void)) : Promise<AxiosResponse<${resDataType}, any>> => {\n`
+                    + `        static call = async (${argsString ? argsString + ", " : ""}${callDataParam === "" ? "" : callDataParam + ", "}${queryArgsString === "" ? "" : queryArgsString + ", "}onError?: false | ((error: any) => void)) : Promise<AxiosResponse<${resDataType}, any>> => {\n`
                     + `            const url = new URL(this.getUrl(${argsString ? "args" : ""}), baseUrl).toString();\n`
-                    + `            return await CallApi<${resDataType}>(url, this.method,${callDataParam === "" ? "" : " data,"} onError);\n`
+                    + `            return await CallApi<${resDataType}>(url, this.method, ${callDataParam === "" ? "null" : "data"}, ${queryArgsString === "" ? "null" : " params"}, onError);\n`
                     + `        }\n`
                     + `    }\n`;
             }
@@ -139,7 +139,7 @@ function generateTypeScriptInterfacesForDtoModels(removeComment, modelsDir, ...c
                         propertyType = `${ref[0].toUpperCase() + ref.slice(1)}[]`;
                         typeMap[ref] = interfaceName;
                         let importStatement = `import { ${ref[0].toUpperCase() + ref.slice(1)} } from './${ref[0].toUpperCase() + ref.slice(1)}';\n`;
-                        if (!importStatement.trim().includes(importStatement.trim()))
+                        if (!importStatements.trim().includes(importStatement.trim()))
                             importStatements += importStatement;
                     }
                     else if (items.type === 'integer') {
@@ -154,7 +154,7 @@ function generateTypeScriptInterfacesForDtoModels(removeComment, modelsDir, ...c
                     propertyType = ref[0].toUpperCase() + ref.slice(1);
                     typeMap[ref] = interfaceName;
                     let importStatement = `import { ${ref[0].slice(1)} } from './${ref[0].toUpperCase() + ref.slice(1)}';\n`;
-                    if (!importStatement.trim().includes(importStatement.trim()))
+                    if (!importStatements.trim().includes(importStatement.trim()))
                         importStatements += importStatement;
                 }
                 interfaceString += `  ${propertyName}${nullable ? '?' : ''}: ${propertyType};\n`;
@@ -222,7 +222,7 @@ export const baseUrl: string = "<<BASE_URL>>";
 
 export type requestMethod = "GET" | "POST" | "PUT" | "DELETE";
 
-async function CallApi<TResponse>(url: string, method: string, data?: any, onError?: false | ((error: any) => void)) : Promise<AxiosResponse<TResponse, any>> {
+async function CallApi<TResponse>(url: string, method: string, data?: any, params?: any, onError?: false | ((error: any) => void)) : Promise<AxiosResponse<TResponse, any>> {
     const token = getBearerToken();
     const headers = {'Authorization': \`Bearer ${"${token}"}\`}
 
@@ -230,6 +230,7 @@ async function CallApi<TResponse>(url: string, method: string, data?: any, onErr
         method: method as Method,
         url: url,
         data: data,
+        params: params,
         headers: headers
     };
     const axiosInstance = axios.create({baseURL: baseUrl})
