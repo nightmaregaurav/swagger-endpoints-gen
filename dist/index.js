@@ -238,7 +238,7 @@ async function CallApi<TResponse>(url: string, method: string, data?: any, param
 
     return await axiosInstance.request<TResponse>(apiCallData).catch((error: any) => {
         if (onError) onError(error);
-        else onApiCallError(onError);
+        else onApiCallError(error);
         throw error.response ?? "Error while making request!";
     });
 }
