@@ -138,7 +138,8 @@ function generateTypeScriptInterfacesForDtoModels(removeComment: boolean, models
                         const ref = items.$ref.split('/').pop();
                         propertyType = `${ref[0].toUpperCase() + ref.slice(1)}[]`;
                         typeMap[ref] = interfaceName;
-                        importStatements += `import { ${ref[0].toUpperCase() + ref.slice(1)} } from './${ref[0].toUpperCase() + ref.slice(1)}';\n`;
+                        let importStatement = `import { ${ref[0].toUpperCase() + ref.slice(1)} } from './${ref[0].toUpperCase() + ref.slice(1)}';\n`;
+                        if(!importStatement.trim().includes(importStatement.trim())) importStatements += importStatement;
                     } else if (items.type === 'integer') {
                         propertyType = 'number[]';
                     } else {
@@ -148,7 +149,8 @@ function generateTypeScriptInterfacesForDtoModels(removeComment: boolean, models
                     const ref = property.$ref.split('/').pop();
                     propertyType = ref[0].toUpperCase() + ref.slice(1);
                     typeMap[ref] = interfaceName;
-                    importStatements += `import { ${ref[0].slice(1)} } from './${ref[0].toUpperCase() + ref.slice(1)}';\n`;
+                    let importStatement = `import { ${ref[0].slice(1)} } from './${ref[0].toUpperCase() + ref.slice(1)}';\n`;
+                    if(!importStatement.trim().includes(importStatement.trim())) importStatements += importStatement;
                 }
 
                 interfaceString += `  ${propertyName}${nullable ? '?' : ''}: ${propertyType};\n`;
