@@ -24,6 +24,7 @@ Contents of `in.json`:
     "outDir": "/path/to/output/folder1",
     "baseUrl": "http://base.url.system",
     "bearerTokenAndLoginRedirectImportPath": "@/services/authService",
+    "apiCallErrorHandlerImportPath": "./helpers/errorHandler",
     "swaggers": [],
     "swaggerUrls": ["http://base.url.system/swagger/v1/swagger.json"],
     "removeComments": true
@@ -32,6 +33,7 @@ Contents of `in.json`:
     "outDir": "/path/to/output/folder2",
     "baseUrl": "http://base.url.system",
     "bearerTokenAndLoginRedirectImportPath": "@/services/authService",
+    "apiCallErrorHandlerImportPath": "./helpers/errorHandler",
     "swaggers": [],
     "swaggerUrls": ["http://base.url.system/swagger/v1/swagger2.json"],
     "removeComments": false
@@ -53,6 +55,7 @@ import swagger4 from './swagger4.json';
 createEndpointsAndModels({
     outDir: "./endpoints",
     bearerTokenAndLoginRedirectImportPath: "./auth/authHelpers",
+    apiCallErrorHandlerImportPath: "./helpers/errorHandler",
     baseUrl: "https://api.example.com",
     swaggers: [swagger1, swagger2, swagger3, swagger4],
     swaggerUrls: ["https://api.example.com/swagger/v1/swagger.json", "https://api.example.com/swagger/v2/swagger.json", "https://api.example.com/swagger/v3/swagger.json"],

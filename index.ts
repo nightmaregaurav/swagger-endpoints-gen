@@ -4,6 +4,7 @@ import * as path from "path";
 export type GeneratorOptions = {
     outDir: string;
     bearerTokenAndLoginRedirectImportPath?: string;
+    apiCallErrorHandlerImportPath?: string;
     baseUrl?: string;
     swaggers?: any[];
     swaggerUrls?: string[];
@@ -82,6 +83,7 @@ export async function createEndpointsAndModels(options: GeneratorOptions) {
     let result = imports + "\n" + classTemplate.replace("// <<< the endpoints will be generated here >>>", classDefinition);
     result = result.replace("<<BASE_URL>>", options.baseUrl ?? "");
     result = result.replace("<<BEARER_TOKEN_AND_LOGIN_REDIRECT_IMPORT_PATH>>", options.bearerTokenAndLoginRedirectImportPath ?? "");
+    result = result.replace("<<API_CALL_ERROR_HANDLER_IMPORT_PATH>>", options.apiCallErrorHandlerImportPath ?? "");
 
     fs.writeFileSync(path.join(options.outDir, `endpoints.ts`), getNotice(options.removeComments).concat(result));
 
@@ -206,8 +208,9 @@ const getNotice: (removeComment: boolean) => string = (removeComment) => removeC
 `;
 
 const getTemplateString: (removeComment: boolean) => string = (removeComment) => `import axios, {AxiosRequestConfig, AxiosResponse, Method} from "axios";
-${removeComment ? "" : "\n// Fill the import statements that provides the relevant functions.\n// getBearerToken() should take no arguments and should return a string containing the bearer token.\n// goToLoginPage() should neither take any arguments nor return any value but should redirect the user to the login page."}
+${removeComment ? "" : "\n// Fill the import statements that provides the relevant functions.\n// getBearerToken() should take no arguments and should return a string containing the bearer token.\n// goToLoginPage() should neither take any arguments nor return any value but should redirect the user to the login page.\n// onApiCallError() should take an 'any' object as an argument and should return nothing."}
 import {getBearerToken, goToLoginPage} from "<<BEARER_TOKEN_AND_LOGIN_REDIRECT_IMPORT_PATH>>";
+import {onApiCallError} from "<<API_CALL_ERROR_HANDLER_IMPORT_PATH>>";
 ${removeComment ? "" : "\n// Fill the value with the base url of the API."}
 export const baseUrl: string = "<<BASE_URL>>";
 
@@ -228,7 +231,8 @@ async function CallApi<TResponse>(url: string, method: string, data?: any, onErr
 
     return await axiosInstance.request<TResponse>(apiCallData).catch((error: any) => {
         if (onError) onError(error);
-        return error?.response;
+        else onApiCallError(onError);
+        throw error.response ?? "Error while making request!";
     });
 }
 
@@ -245,6 +249,7 @@ export class endpoints {
 // createEndpointsAndModels({
 //     outDir: "./endpoints",
 //     bearerTokenAndLoginRedirectImportPath: "./auth/authHelpers",
+//     apiCallErrorHandlerImportPath: "./helpers/errorHandler",
 //     baseUrl: "https://api.example.com",
 //     swaggers: [swagger, swagger1, swagger2, swagger3],
 //     swaggerUrls: ["https://api.example.com/swagger/v1/swagger.json", "https://api.example.com/swagger/v2/swagger.json", "https://api.example.com/swagger/v3/swagger.json"]
