@@ -260,8 +260,8 @@ export class endpoints {
 // import swagger3 from './swagger3.json';
 // createEndpointsAndModels({
 //     outDir: "./endpoints",
-//     bearerTokenAndLoginRedirectImportPath: "./auth/authHelpers",
-//     apiCallErrorHandlerImportPath: "./helpers/errorHandler",
+//     bearerTokenImportPath: "./auth/authHelpers",
+//     successErrorMiddlewarePath: "./middlewares/baseMiddlewares",
 //     baseUrl: "https://api.example.com",
 //     swaggers: [swagger, swagger1, swagger2, swagger3],
 //     swaggerUrls: ["https://api.example.com/swagger/v1/swagger.json", "https://api.example.com/swagger/v2/swagger.json", "https://api.example.com/swagger/v3/swagger.json"]
