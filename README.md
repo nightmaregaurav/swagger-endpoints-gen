@@ -54,8 +54,8 @@ import swagger4 from './swagger4.json';
 
 createEndpointsAndModels({
     outDir: "./endpoints",
-    "bearerTokenImportPath": "@/auth/authHelpers",
-    "successErrorMiddlewarePath": "@/middlewares/baseMiddlewares",
+    bearerTokenImportPath: "@/auth/authHelpers",
+    successErrorMiddlewarePath: "@/middlewares/baseMiddlewares",
     baseUrl: "https://api.example.com",
     swaggers: [swagger1, swagger2, swagger3, swagger4],
     swaggerUrls: ["https://api.example.com/swagger/v1/swagger.json", "https://api.example.com/swagger/v2/swagger.json", "https://api.example.com/swagger/v3/swagger.json"],
