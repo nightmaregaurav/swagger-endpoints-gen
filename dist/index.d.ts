@@ -1,7 +1,7 @@
 export type GeneratorOptions = {
     outDir: string;
-    bearerTokenAndLoginRedirectImportPath?: string;
-    apiCallErrorHandlerImportPath?: string;
+    bearerTokenImportPath?: string;
+    successErrorMiddlewarePath?: string;
     baseUrl?: string;
     swaggers?: any[];
     swaggerUrls?: string[];
