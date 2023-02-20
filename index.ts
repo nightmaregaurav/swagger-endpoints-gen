@@ -217,7 +217,7 @@ export const baseUrl: string = "<<BASE_URL>>";
 
 export type requestMethod = "GET" | "POST" | "PUT" | "DELETE" | "PATCH" | "OPTIONS" | "HEAD" | "TRACE" | "CONNECT";
 
-async function CallApi<TResponse>(url: string, method: string, data?: any, params?: any, onError?: false | ((error: AxiosError) => void)) : Promise<AxiosResponse<TResponse, any>> {
+async function CallApi<TResponse>(url: string, method: requestMethod, data?: {}, params?: {}, onError?: false | ((error: AxiosError) => void)) : Promise<AxiosResponse<TResponse, any>> {
     const token = getBearerToken();
     const headers = {'Authorization': \`Bearer ${"${token}"}\`}
 
