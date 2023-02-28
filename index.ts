@@ -119,6 +119,11 @@ function generateTypeScriptInterfacesForDtoModels(removeComment: boolean, models
         const typeMap: any = {};
 
         for (const [name, schema] of Object.entries(component.schemas)) {
+            if ((schema as any).type !== 'object'){
+                console.log(`Skipping ${name} because it's type ${(schema as any).type} is not currently supported!`);
+                continue;
+            }
+
             const interfaceName = name[0].toUpperCase() + name.slice(1);
             let interfaceString = `export interface ${interfaceName} {\n`;
             let importStatements = '';
@@ -130,26 +135,30 @@ function generateTypeScriptInterfacesForDtoModels(removeComment: boolean, models
                 const items = property.items;
                 const nullable = property.nullable ?? false;
 
-                if (propertyType === 'integer') {
+                if (property.$ref) {
+                    const ref = property.$ref.split('/').pop();
+                    propertyType = ref[0].toUpperCase() + ref.slice(1);
+                    typeMap[ref] = interfaceName;
+                    let importStatement = `import { ${ref[0].slice(1)} } from './${ref[0].toUpperCase() + ref.slice(1)}';\n`;
+                    if (!importStatements.trim().includes(importStatement.trim())) importStatements += importStatement;
+                } else if (propertyType === 'integer') {
                     propertyType = 'number';
+                } else if (propertyType === 'object') {
+                    propertyType = 'any';
                 } else if (propertyType === 'array') {
                     if (items.$ref) {
                         const ref = items.$ref.split('/').pop();
                         propertyType = `${ref[0].toUpperCase() + ref.slice(1)}[]`;
                         typeMap[ref] = interfaceName;
                         let importStatement = `import { ${ref[0].toUpperCase() + ref.slice(1)} } from './${ref[0].toUpperCase() + ref.slice(1)}';\n`;
-                        if(!importStatements.trim().includes(importStatement.trim())) importStatements += importStatement;
+                        if (!importStatements.trim().includes(importStatement.trim())) importStatements += importStatement;
                     } else if (items.type === 'integer') {
                         propertyType = 'number[]';
+                    } else if (items.type === 'object') {
+                        propertyType = 'any';
                     } else {
                         propertyType = `${items.type}[]`;
                     }
-                } else if (propertyType === 'object' && property.$ref) {
-                    const ref = property.$ref.split('/').pop();
-                    propertyType = ref[0].toUpperCase() + ref.slice(1);
-                    typeMap[ref] = interfaceName;
-                    let importStatement = `import { ${ref[0].slice(1)} } from './${ref[0].toUpperCase() + ref.slice(1)}';\n`;
-                    if(!importStatements.trim().includes(importStatement.trim())) importStatements += importStatement;
                 }
 
                 interfaceString += `  ${propertyName}${nullable ? '?' : ''}: ${propertyType};\n`;
