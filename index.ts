@@ -139,7 +139,7 @@ function generateTypeScriptInterfacesForDtoModels(removeComment: boolean, models
                     const ref = property.$ref.split('/').pop();
                     propertyType = ref[0].toUpperCase() + ref.slice(1);
                     typeMap[ref] = interfaceName;
-                    let importStatement = `import { ${ref[0].slice(1)} } from './${ref[0].toUpperCase() + ref.slice(1)}';\n`;
+                    let importStatement = `import { ${ref[0].toUpperCase() + ref.slice(1)} } from './${ref[0].toUpperCase() + ref.slice(1)}';\n`;
                     if (!importStatements.trim().includes(importStatement.trim())) importStatements += importStatement;
                 } else if (propertyType === 'integer') {
                     propertyType = 'number';
