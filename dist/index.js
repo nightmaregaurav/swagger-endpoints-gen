@@ -75,7 +75,7 @@ async function createEndpointsAndModels(options) {
                 classDefinition += `    static ${endpointName} = class {\n`
                     + `        static method: requestMethod = "${endpointMethod}";\n`
                     + `        static getUrl = (${argsString}) => \`${endpointUrl.replace(/{/g, "${args.")}\`;\n`
-                    + `        static call = async (${argsString ? argsString + ", " : ""}${callDataParam === "" ? "" : callDataParam + ", "}${queryArgsString === "" ? "" : queryArgsString + ", "}onError?: false | ((error: AxiosError) => void)) : Promise<AxiosResponse<${resDataType}, any>> => {\n`
+                    + `        static call = async (${argsString ? argsString + ", " : ""}${callDataParam === "" ? "" : callDataParam + ", "}${queryArgsString === "" ? "" : queryArgsString + ", "}onError?: false | ((error: AxiosError) => void)) : Promise<AxiosResponse<${resDataType}>> => {\n`
                     + `            const url = new URL(this.getUrl(${argsString ? "args" : ""}), baseUrl).toString();\n`
                     + `            return await CallApi<${resDataType}>(url, this.method, ${callDataParam === "" ? "undefined" : "data"}, ${queryArgsString === "" ? "undefined" : " params"}, onError);\n`
                     + `        }\n`
@@ -121,6 +121,10 @@ function generateTypeScriptInterfacesForDtoModels(removeComment, modelsDir, ...c
     for (const component of components) {
         const typeMap = {};
         for (const [name, schema] of Object.entries(component.schemas)) {
+            if (schema.type !== 'object') {
+                console.log(`Skipping ${name} because it's type ${schema.type} is not currently supported!`);
+                continue;
+            }
             const interfaceName = name[0].toUpperCase() + name.slice(1);
             let interfaceString = `export interface ${interfaceName} {\n`;
             let importStatements = '';
@@ -130,8 +134,19 @@ function generateTypeScriptInterfacesForDtoModels(removeComment, modelsDir, ...c
                 let propertyType = property.type;
                 const items = property.items;
                 const nullable = (_a = property.nullable) !== null && _a !== void 0 ? _a : false;
-                if (propertyType === 'integer') {
+                if (property.$ref) {
+                    const ref = property.$ref.split('/').pop();
+                    propertyType = ref[0].toUpperCase() + ref.slice(1);
+                    typeMap[ref] = interfaceName;
+                    let importStatement = `import { ${ref[0].slice(1)} } from './${ref[0].toUpperCase() + ref.slice(1)}';\n`;
+                    if (!importStatements.trim().includes(importStatement.trim()))
+                        importStatements += importStatement;
+                }
+                else if (propertyType === 'integer') {
                     propertyType = 'number';
+                }
+                else if (propertyType === 'object') {
+                    propertyType = 'any';
                 }
                 else if (propertyType === 'array') {
                     if (items.$ref) {
@@ -145,17 +160,12 @@ function generateTypeScriptInterfacesForDtoModels(removeComment, modelsDir, ...c
                     else if (items.type === 'integer') {
                         propertyType = 'number[]';
                     }
+                    else if (items.type === 'object') {
+                        propertyType = 'any';
+                    }
                     else {
                         propertyType = `${items.type}[]`;
                     }
-                }
-                else if (propertyType === 'object' && property.$ref) {
-                    const ref = property.$ref.split('/').pop();
-                    propertyType = ref[0].toUpperCase() + ref.slice(1);
-                    typeMap[ref] = interfaceName;
-                    let importStatement = `import { ${ref[0].slice(1)} } from './${ref[0].toUpperCase() + ref.slice(1)}';\n`;
-                    if (!importStatements.trim().includes(importStatement.trim()))
-                        importStatements += importStatement;
                 }
                 interfaceString += `  ${propertyName}${nullable ? '?' : ''}: ${propertyType};\n`;
             }
@@ -222,7 +232,7 @@ export const baseUrl: string = "<<BASE_URL>>";
 
 export type requestMethod = "GET" | "POST" | "PUT" | "DELETE" | "PATCH" | "OPTIONS" | "HEAD" | "TRACE" | "CONNECT";
 
-async function CallApi<TResponse>(url: string, method: requestMethod, data?: {}, params?: {}, onError?: false | ((error: AxiosError) => void)) : Promise<AxiosResponse<TResponse, any>> {
+async function CallApi<TResponse>(url: string, method: requestMethod, data?: {}, params?: {}, onError?: false | ((error: AxiosError) => void)) : Promise<AxiosResponse<TResponse>> {
     const token = getBearerToken();
     const headers = {'Authorization': \`Bearer ${"${token}"}\`}
 
