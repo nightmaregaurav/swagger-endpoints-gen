@@ -120,15 +120,20 @@ function generateTypeScriptInterfacesForDtoModels(removeComment, modelsDir, ...c
     }
     for (const component of components) {
         const typeMap = {};
+        let schemas = component.schemas;
+        if (schemas === undefined || schemas === null)
+            schemas = {};
         for (const [name, schema] of Object.entries(component.schemas)) {
             if (schema.type !== 'object') {
                 console.log(`Skipping ${name} because it's type ${schema.type} is not currently supported!`);
                 continue;
             }
+            let properties = schema.properties;
+            if (properties === undefined || properties === null)
+                properties = {};
             const interfaceName = name[0].toUpperCase() + name.slice(1);
             let interfaceString = `export interface ${interfaceName} {\n`;
             let importStatements = '';
-            const properties = schema.properties;
             for (const [propertyName, property_] of Object.entries(properties)) {
                 const property = property_;
                 let propertyType = property.type;

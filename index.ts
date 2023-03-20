@@ -118,17 +118,22 @@ function generateTypeScriptInterfacesForDtoModels(removeComment: boolean, models
     for (const component of components) {
         const typeMap: any = {};
 
+        let schemas : any = component.schemas;
+        if (schemas === undefined || schemas === null) schemas = {};
+
         for (const [name, schema] of Object.entries(component.schemas)) {
             if ((schema as any).type !== 'object'){
                 console.log(`Skipping ${name} because it's type ${(schema as any).type} is not currently supported!`);
                 continue;
             }
 
+            let properties: any = (schema as any).properties;
+            if (properties === undefined || properties === null) properties = {};
+
             const interfaceName = name[0].toUpperCase() + name.slice(1);
             let interfaceString = `export interface ${interfaceName} {\n`;
             let importStatements = '';
 
-            const properties: any = (schema as any).properties;
             for (const [propertyName, property_] of Object.entries(properties)) {
                 const property = property_ as any;
                 let propertyType = property.type;
