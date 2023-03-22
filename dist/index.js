@@ -124,6 +124,24 @@ function generateTypeScriptInterfacesForDtoModels(removeComment, modelsDir, ...c
         if (schemas === undefined || schemas === null)
             schemas = {};
         for (const [name, schema] of Object.entries(component.schemas)) {
+            if (schema.enum !== undefined) {
+                const enumName = name[0].toUpperCase() + name.slice(1);
+                let enumString = `export enum ${enumName} {\n`;
+                for (const enumValue of schema.enum) {
+                    if (schema.type === "integer") {
+                        enumString += `    E_${enumValue} = ${enumValue},\n`;
+                    }
+                    else if (schema.type === "string") {
+                        enumString += `    ${enumValue} = "${enumValue}",\n`;
+                    }
+                }
+                enumString += `}\n`;
+                if (!fs.existsSync(`${modelsDir}/enums`)) {
+                    fs.mkdirSync(`${modelsDir}/enums`);
+                }
+                fs.writeFileSync(path.join(`${modelsDir}/enums`, `${enumName}.ts`), getNotice(removeComment).concat(enumString));
+                continue;
+            }
             if (schema.type !== 'object') {
                 console.log(`Skipping ${name} because it's type ${schema.type} is not currently supported!`);
                 continue;
@@ -177,14 +195,19 @@ function generateTypeScriptInterfacesForDtoModels(removeComment, modelsDir, ...c
             interfaceString += '}\n';
             fs.writeFileSync(path.join(modelsDir, `${interfaceName}.ts`), getNotice(removeComment).concat(importStatements).concat(interfaceString));
         }
-        for (const [name, _] of Object.entries(component.schemas)) {
-            const interfaceName = name[0].toUpperCase() + name.slice(1);
-            let interfaceString = fs.readFileSync(path.join(modelsDir, `${interfaceName}.ts`), 'utf8');
-            interfaceString = interfaceString.replace(new RegExp(`(\\w+)\\s*?:\\s*?${name}`, 'g'), `$1: ${interfaceName}`);
-            fs.writeFileSync(path.join(modelsDir, `${interfaceName}.ts`), interfaceString);
-        }
+        fixImportedPropertyTypeInFilesCorrespondingToSchemas(modelsDir, component.schemas);
     }
 }
+const fixImportedPropertyTypeInFilesCorrespondingToSchemas = (modelsDir, schemas) => {
+    for (const [name, _] of Object.entries(schemas)) {
+        if (_.enum !== undefined)
+            continue;
+        const interfaceName = name[0].toUpperCase() + name.slice(1);
+        let interfaceString = fs.readFileSync(path.join(modelsDir, `${interfaceName}.ts`), 'utf8');
+        interfaceString = interfaceString.replace(new RegExp(`(\\w+)\\s*?:\\s*?${name}`, 'g'), `$1: ${interfaceName}`);
+        fs.writeFileSync(path.join(modelsDir, `${interfaceName}.ts`), interfaceString);
+    }
+};
 const getReqResTypeOfApiCall = (reqsRes) => {
     var _a, _b, _c, _d, _e;
     let importStatement = '';
