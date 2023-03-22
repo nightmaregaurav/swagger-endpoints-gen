@@ -116,8 +116,6 @@ function generateTypeScriptInterfacesForDtoModels(removeComment: boolean, models
     }
 
     for (const component of components) {
-        const typeMap: any = {};
-
         let schemas : any = component.schemas;
         if (schemas === undefined || schemas === null) schemas = {};
 
@@ -162,8 +160,10 @@ function generateTypeScriptInterfacesForDtoModels(removeComment: boolean, models
                 if (property.$ref) {
                     const ref = property.$ref.split('/').pop();
                     propertyType = ref[0].toUpperCase() + ref.slice(1);
-                    typeMap[ref] = interfaceName;
-                    let importStatement = `import { ${ref[0].toUpperCase() + ref.slice(1)} } from './${ref[0].toUpperCase() + ref.slice(1)}';\n`;
+                    let importStatement = "";
+                    let refSchema = schemas[ref];
+                    if ((refSchema as any).enum !== undefined) importStatement = `import { ${ref[0].toUpperCase() + ref.slice(1)} } from './enums/${ref[0].toUpperCase() + ref.slice(1)}';\n`;
+                    else importStatement = `import { ${ref[0].toUpperCase() + ref.slice(1)} } from './${ref[0].toUpperCase() + ref.slice(1)}';\n`;
                     if (!importStatements.trim().includes(importStatement.trim())) importStatements += importStatement;
                 } else if (propertyType === 'integer') {
                     propertyType = 'number';
@@ -173,7 +173,6 @@ function generateTypeScriptInterfacesForDtoModels(removeComment: boolean, models
                     if (items.$ref) {
                         const ref = items.$ref.split('/').pop();
                         propertyType = `${ref[0].toUpperCase() + ref.slice(1)}[]`;
-                        typeMap[ref] = interfaceName;
                         let importStatement = `import { ${ref[0].toUpperCase() + ref.slice(1)} } from './${ref[0].toUpperCase() + ref.slice(1)}';\n`;
                         if (!importStatements.trim().includes(importStatement.trim())) importStatements += importStatement;
                     } else if (items.type === 'integer') {

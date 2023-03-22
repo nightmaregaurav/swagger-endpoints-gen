@@ -119,7 +119,6 @@ function generateTypeScriptInterfacesForDtoModels(removeComment, modelsDir, ...c
         fs.mkdirSync(modelsDir);
     }
     for (const component of components) {
-        const typeMap = {};
         let schemas = component.schemas;
         if (schemas === undefined || schemas === null)
             schemas = {};
@@ -160,8 +159,12 @@ function generateTypeScriptInterfacesForDtoModels(removeComment, modelsDir, ...c
                 if (property.$ref) {
                     const ref = property.$ref.split('/').pop();
                     propertyType = ref[0].toUpperCase() + ref.slice(1);
-                    typeMap[ref] = interfaceName;
-                    let importStatement = `import { ${ref[0].toUpperCase() + ref.slice(1)} } from './${ref[0].toUpperCase() + ref.slice(1)}';\n`;
+                    let importStatement = "";
+                    let refSchema = schemas[ref];
+                    if (refSchema.enum !== undefined)
+                        importStatement = `import { ${ref[0].toUpperCase() + ref.slice(1)} } from './enums/${ref[0].toUpperCase() + ref.slice(1)}';\n`;
+                    else
+                        importStatement = `import { ${ref[0].toUpperCase() + ref.slice(1)} } from './${ref[0].toUpperCase() + ref.slice(1)}';\n`;
                     if (!importStatements.trim().includes(importStatement.trim()))
                         importStatements += importStatement;
                 }
@@ -175,7 +178,6 @@ function generateTypeScriptInterfacesForDtoModels(removeComment, modelsDir, ...c
                     if (items.$ref) {
                         const ref = items.$ref.split('/').pop();
                         propertyType = `${ref[0].toUpperCase() + ref.slice(1)}[]`;
-                        typeMap[ref] = interfaceName;
                         let importStatement = `import { ${ref[0].toUpperCase() + ref.slice(1)} } from './${ref[0].toUpperCase() + ref.slice(1)}';\n`;
                         if (!importStatements.trim().includes(importStatement.trim()))
                             importStatements += importStatement;
