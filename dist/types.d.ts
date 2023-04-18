@@ -7,4 +7,3 @@ export type GeneratorOptions = {
     swaggerUrls?: string[];
     removeComments?: boolean;
 };
-export declare function createEndpointsAndModels(options: GeneratorOptions): Promise<void>;
