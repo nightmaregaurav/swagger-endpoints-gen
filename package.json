@@ -7,9 +7,9 @@
     "typescript": "^4.9.4"
   },
   "name": "@nightmaregaurav/swagger-endpoints-gen",
-  "version": "0.0.29",
+  "version": "0.0.30",
   "description": "Automatically generate typescript models from swagger.json schemas and endpoints from paths and methods so api call is as simple as writing endpoints.API__GET__my_object.call({data:value});",
-  "main": "index.ts",
+  "main": "typescript.ts",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/nightmaregaurav/swagger-endpoints-gen.git"
