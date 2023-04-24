@@ -76,9 +76,9 @@ async function createTypescriptEndpointsAndModels(options) {
                 classDefinition += `    static ${endpointName} = class {\n`
                     + `        static method: requestMethod = "${endpointMethod}";\n`
                     + `        static getUrl = (${argsString}) => \`${endpointUrl.replace(/{/g, "${args.")}\`;\n`
-                    + `        static call = async (${argsString ? argsString + ", " : ""}${callDataParam === "" ? "" : callDataParam + ", "}${queryArgsString === "" ? "" : queryArgsString + ", "}${useCacheHelper ? "" : "cacheExpiry?: Date, "}onError?: false | ((error: AxiosError) => void)) : Promise<AxiosResponse<${resDataType}>> => {\n`
+                    + `        static call = async (${argsString ? argsString + ", " : ""}${callDataParam === "" ? "" : callDataParam + ", "}${queryArgsString === "" ? "" : queryArgsString + ", "}${!useCacheHelper ? "" : "cacheExpiry?: Date, "}onError?: false | ((error: AxiosError) => void)) : Promise<AxiosResponse<${resDataType}>> => {\n`
                     + `            const url = new URL(this.getUrl(${argsString ? "args" : ""}), baseUrl).toString();\n`
-                    + `            return await CallApi<${resDataType}>(url, this.method, ${callDataParam === "" ? "undefined" : "data"}, ${queryArgsString === "" ? "undefined" : " params"}${useCacheHelper ? "" : ", cacheExpiry"}, onError);\n`
+                    + `            return await CallApi<${resDataType}>(url, this.method, ${callDataParam === "" ? "undefined" : "data"}, ${queryArgsString === "" ? "undefined" : " params"}${!useCacheHelper ? "" : ", cacheExpiry"}, onError);\n`
                     + `        }\n`
                     + `    }\n`;
             }
@@ -261,13 +261,13 @@ import {getBearerToken} from "<<BEARER_TOKEN_IMPORT_PATH>>";
 ${removeComment ? "" : "\n// preflightMiddleware() should take an InternalAxiosRequestConfig as an argument and should return either null or an InternalAxiosRequestConfig(returning InternalAxiosRequestConfig will change the request config).\n// successMiddleware() should take an AxiosResponse as an argument and should return void.\n// errorMiddleware() should take an AxiosError as an argument and should return void."}
 import {preflightMiddleware, successMiddleware, errorMiddleware} from "<<SUCCESS_ERROR_MIDDLEWARE_PATH>>";
 ${removeComment ? "" : "\n// cacheGet() should take a string as an argument and should return a Promise of (any or null or unknown).\n// cacheSet() should take a string and a value as compulsory arguments and should return a Promise of void and may take a Date as an optional argument to set the expiry of the cache."}
-${useCacheHelper ? "" : "// "}import {cacheGet, cacheSet} from \"<<CACHE_HELPER_PATH>>\";"}
+${useCacheHelper ? "" : "// "}import {cacheGet, cacheSet} from \"<<CACHE_HELPER_PATH>>\";
 ${removeComment ? "" : "\n// Fill the value with the base url of the API."}
 export const baseUrl: string = "<<BASE_URL>>";
 
 export type requestMethod = "GET" | "POST" | "PUT" | "DELETE" | "PATCH" | "OPTIONS" | "HEAD" | "TRACE" | "CONNECT";
 
-async function CallApi<TResponse>(url: string, method: requestMethod, data?: {}, params?: {}, ${useCacheHelper ? "" : "cacheExpiry?: Date, "}onError?: false | ((error: AxiosError) => void)) : Promise<AxiosResponse<TResponse>> {
+async function CallApi<TResponse>(url: string, method: requestMethod, data?: {}, params?: {}, ${!useCacheHelper ? "" : "cacheExpiry?: Date, "}onError?: false | ((error: AxiosError) => void)) : Promise<AxiosResponse<TResponse>> {
     const token = getBearerToken();
     const headers = {'Authorization': \`Bearer ${"${token}"}\`}
     
@@ -337,6 +337,7 @@ export class endpoints {
 //     outDir: "./endpoints",
 //     bearerTokenImportPath: "./auth/authHelpers",
 //     successErrorMiddlewarePath: "./middlewares/baseMiddlewares",
+//     cacheHelperPath: "./helpers/cacheHelpers",
 //     baseUrl: "https://api.example.com",
 //     swaggers: [swagger, swagger1, swagger2, swagger3],
 //     swaggerUrls: ["https://api.example.com/swagger/v1/swagger.json", "https://api.example.com/swagger/v2/swagger.json", "https://api.example.com/swagger/v3/swagger.json"]
