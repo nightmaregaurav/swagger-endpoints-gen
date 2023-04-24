@@ -25,6 +25,7 @@ Contents of `in.json`:
     "baseUrl": "http://base.url.system",
     "bearerTokenImportPath": "@/auth/authHelpers",
     "successErrorMiddlewarePath": "@/middlewares/baseMiddlewares",
+    "cacheHelperPath": "@/helpers/cacheHelpers",
     "swaggers": [],
     "swaggerUrls": ["http://base.url.system/swagger/v1/swagger.json"],
     "removeComments": true
@@ -34,6 +35,7 @@ Contents of `in.json`:
     "baseUrl": "http://base.url.system",
     "bearerTokenImportPath": "@/auth/authHelpers",
     "successErrorMiddlewarePath": "@/middlewares/baseMiddlewares",
+    "cacheHelperPath": "@/helpers/cacheHelpers",
     "swaggers": [],
     "swaggerUrls": ["http://base.url.system/swagger/v1/swagger2.json"],
     "removeComments": false
@@ -56,6 +58,7 @@ createEndpointsAndModels({
     outDir: "./endpoints",
     bearerTokenImportPath: "@/auth/authHelpers",
     successErrorMiddlewarePath: "@/middlewares/baseMiddlewares",
+    cacheHelperPath: "@/helpers/cacheHelpers",
     baseUrl: "https://api.example.com",
     swaggers: [swagger1, swagger2, swagger3, swagger4],
     swaggerUrls: ["https://api.example.com/swagger/v1/swagger.json", "https://api.example.com/swagger/v2/swagger.json", "https://api.example.com/swagger/v3/swagger.json"],
