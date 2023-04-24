@@ -244,7 +244,7 @@ import {getBearerToken} from "<<BEARER_TOKEN_IMPORT_PATH>>";
 ${removeComment ? "" : "\n// preflightMiddleware() should take an InternalAxiosRequestConfig as an argument and should return either null or an InternalAxiosRequestConfig(returning InternalAxiosRequestConfig will change the request config).\n// successMiddleware() should take an AxiosResponse as an argument and should return void.\n// errorMiddleware() should take an AxiosError as an argument and should return void."}
 import {preflightMiddleware, successMiddleware, errorMiddleware} from "<<SUCCESS_ERROR_MIDDLEWARE_PATH>>";
 ${removeComment ? "" : "\n// cacheGet() should take a string as an argument and should return a Promise of (any or null or unknown).\n// cacheSet() should take a string and a value as compulsory arguments and should return a Promise of void and may take a Date as an optional argument to set the expiry of the cache."}
-${useCacheHelper ? "" : "// "}import {cacheGet, cacheSet} from \"<<CACHE_HELPER_PATH>>\";"}
+${useCacheHelper ? "" : "// "}import {cacheGet, cacheSet} from \"<<CACHE_HELPER_PATH>>\";
 ${removeComment ? "" : "\n// Fill the value with the base url of the API."}
 export const baseUrl: string = "<<BASE_URL>>";
 
