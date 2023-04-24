@@ -321,6 +321,7 @@ export class endpoints {
 //     outDir: "./endpoints",
 //     bearerTokenImportPath: "./auth/authHelpers",
 //     successErrorMiddlewarePath: "./middlewares/baseMiddlewares",
+//     cacheHelperPath: "./helpers/cacheHelpers",
 //     baseUrl: "https://api.example.com",
 //     swaggers: [swagger, swagger1, swagger2, swagger3],
 //     swaggerUrls: ["https://api.example.com/swagger/v1/swagger.json", "https://api.example.com/swagger/v2/swagger.json", "https://api.example.com/swagger/v3/swagger.json"]
