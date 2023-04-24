@@ -62,9 +62,9 @@ export async function createTypescriptEndpointsAndModels(options: GeneratorOptio
                 classDefinition += `    static ${endpointName} = class {\n`
                     + `        static method: requestMethod = "${endpointMethod}";\n`
                     + `        static getUrl = (${argsString}) => \`${endpointUrl.replace(/{/g, "${args.")}\`;\n`
-                    + `        static call = async (${argsString ? argsString + ", " : ""}${callDataParam === "" ? "" : callDataParam + ", "}${queryArgsString === "" ? "" : queryArgsString + ", "}${useCacheHelper ? "" : "cacheExpiry?: Date, "}onError?: false | ((error: AxiosError) => void)) : Promise<AxiosResponse<${resDataType}>> => {\n`
+                    + `        static call = async (${argsString ? argsString + ", " : ""}${callDataParam === "" ? "" : callDataParam + ", "}${queryArgsString === "" ? "" : queryArgsString + ", "}${!useCacheHelper ? "" : "cacheExpiry?: Date, "}onError?: false | ((error: AxiosError) => void)) : Promise<AxiosResponse<${resDataType}>> => {\n`
                     + `            const url = new URL(this.getUrl(${argsString ? "args" : ""}), baseUrl).toString();\n`
-                    + `            return await CallApi<${resDataType}>(url, this.method, ${callDataParam === "" ? "undefined" : "data"}, ${queryArgsString === "" ? "undefined" : " params"}${useCacheHelper ? "" : ", cacheExpiry"}, onError);\n`
+                    + `            return await CallApi<${resDataType}>(url, this.method, ${callDataParam === "" ? "undefined" : "data"}, ${queryArgsString === "" ? "undefined" : " params"}${!useCacheHelper ? "" : ", cacheExpiry"}, onError);\n`
                     + `        }\n`
                     + `    }\n`;
             }
@@ -250,7 +250,7 @@ export const baseUrl: string = "<<BASE_URL>>";
 
 export type requestMethod = "GET" | "POST" | "PUT" | "DELETE" | "PATCH" | "OPTIONS" | "HEAD" | "TRACE" | "CONNECT";
 
-async function CallApi<TResponse>(url: string, method: requestMethod, data?: {}, params?: {}, ${useCacheHelper ? "" : "cacheExpiry?: Date, "}onError?: false | ((error: AxiosError) => void)) : Promise<AxiosResponse<TResponse>> {
+async function CallApi<TResponse>(url: string, method: requestMethod, data?: {}, params?: {}, ${!useCacheHelper ? "" : "cacheExpiry?: Date, "}onError?: false | ((error: AxiosError) => void)) : Promise<AxiosResponse<TResponse>> {
     const token = getBearerToken();
     const headers = {'Authorization': \`Bearer ${"${token}"}\`}
     
