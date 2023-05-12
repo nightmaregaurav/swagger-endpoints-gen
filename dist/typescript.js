@@ -180,9 +180,14 @@ function generateTypeScriptInterfacesForDtoModels(removeComment, modelsDir, ...c
                     if (items.$ref) {
                         const ref = items.$ref.split('/').pop();
                         propertyType = `${ref[0].toUpperCase() + ref.slice(1)}[]`;
-                        let importStatement = `import { ${ref[0].toUpperCase() + ref.slice(1)} } from './${ref[0].toUpperCase() + ref.slice(1)}';\n`;
-                        if (!importStatements.trim().includes(importStatement.trim()))
-                            importStatements += importStatement;
+                        let baseImportStatement = "";
+                        let refSchema = schemas[ref];
+                        if (refSchema.enum !== undefined)
+                            baseImportStatement = `import { ${ref[0].toUpperCase() + ref.slice(1)} } from './enums/${ref[0].toUpperCase() + ref.slice(1)}';\n`;
+                        else
+                            baseImportStatement = `import { ${ref[0].toUpperCase() + ref.slice(1)} } from './${ref[0].toUpperCase() + ref.slice(1)}';\n`;
+                        if (!importStatements.trim().includes(baseImportStatement.trim()))
+                            importStatements += baseImportStatement;
                     }
                     else if (items.type === 'integer') {
                         propertyType = 'number[]';
@@ -320,7 +325,7 @@ async function CallApi<TResponse>(url: string, method: requestMethod, data?: {},
         if (onError) onError(error);
         throw error.response ?? "Error while making request!";
     });
-    ${useCacheHelper ? "\nawait cacheSet(cacheKey, response.data, cacheExpiry);" : ""}
+${useCacheHelper ? "\n    await cacheSet(cacheKey, response.data, cacheExpiry);" : ""}
     return response;
 }
 
