@@ -242,9 +242,9 @@ const getNotice: (removeComment: boolean) => string = (removeComment) => removeC
 `;
 
 // noinspection ES6RedundantNestingInTemplateLiteral
-const getTemplateString: (removeComment: boolean, useCacheHelper: boolean) => string = (removeComment, useCacheHelper) => `// noinspection PointlessBooleanExpressionJS,UnnecessaryLocalVariableJS,HttpUrlsUsage,JSUnusedLocalSymbols\n\n` +
+const getTemplateString: (removeComment: boolean, useCacheHelper: boolean) => string = (removeComment, useCacheHelper) => `${"// noinspection PointlessBooleanExpressionJS,UnnecessaryLocalVariableJS,HttpUrlsUsage,JSUnusedLocalSymbols"}
 
-`import axios, {AxiosError, AxiosRequestConfig, AxiosRequestHeaders, AxiosResponse, InternalAxiosRequestConfig, Method} from "axios";
+import axios, {AxiosError, AxiosRequestConfig, AxiosRequestHeaders, AxiosResponse, InternalAxiosRequestConfig, Method} from "axios";
 ${removeComment ? "" : "\n// getBearerToken() should take no arguments and should return a string containing the bearer token."}
 import {getBearerToken} from "<<BEARER_TOKEN_IMPORT_PATH>>";
 ${removeComment ? "" : "\n// preflightMiddleware() should take an InternalAxiosRequestConfig as an argument and should return either null or an InternalAxiosRequestConfig(returning InternalAxiosRequestConfig will change the request config).\n// successMiddleware() should take an AxiosResponse as an argument and should return void.\n// errorMiddleware() should take an AxiosError as an argument and should return void."}
