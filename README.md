@@ -94,7 +94,7 @@ let userId: number = await endpoints.API__POST__user__schoolId.call({schoolId:2}
 *If you are new to TypeScript, you can read [this](https://www.typescriptlang.org/docs/handbook/typescript-in-5-minutes.html) to learn how to use TypeScript.*<br>
 
 ## License
-MethodSignature is released under the MIT License. You can find the full license details in the [LICENSE](LICENSE) file.
+Swagger Endpoints Generator is released under the MIT License. You can find the full license details in the [LICENSE](LICENSE) file.
 
 Made with ❤️ by [NightmareGaurav](https://github.com/nightmaregaurav).
 
