@@ -1,7 +1,8 @@
 {
    "compilerOptions": {
-      "target": "es2018",
+      "target": "ES2023",
       "module": "commonjs",
+      "lib": ["ES2023",],
       "moduleResolution": "node",
       "outDir": "./dist",
       "emitDecoratorMetadata": true,

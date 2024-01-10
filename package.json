@@ -1,15 +1,11 @@
 {
   "bin": {
-    "generate-endpoints-from-swagger": "dist/bin/index.js"
-  },
-  "devDependencies": {
-    "@types/node": "^18.11.18",
-    "typescript": "^4.9.4"
+    "generate-endpoints-from-swagger": "dist/Index.js"
   },
   "name": "@nightmaregaurav/swagger-endpoints-gen",
-  "version": "1.0.1",
+  "version": "2.0.0",
   "description": "Automatically generate typescript models from swagger.json schemas and endpoints from paths and methods so api call is as simple as writing endpoints.API__GET__my_object.call({data:value});",
-  "main": "typescript.ts",
+  "main": "Index.ts",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/nightmaregaurav/swagger-endpoints-gen.git"
@@ -26,5 +22,9 @@
   "bugs": {
     "url": "https://github.com/nightmaregaurav/swagger-endpoints-gen/issues"
   },
-  "homepage": "https://github.com/nightmaregaurav/swagger-endpoints-gen#readme"
+  "homepage": "https://github.com/nightmaregaurav/swagger-endpoints-gen#readme",
+  "devDependencies": {
+    "@types/node": "^20.9.0",
+    "typescript": "^5.2.2"
+  }
 }

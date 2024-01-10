@@ -1,8 +1,8 @@
 #! /usr/bin/env node
 
 import {argv} from 'process';
-import {createTypescriptEndpointsAndModels} from "../typescript";
-import {GeneratorOptions} from "../types";
+import {GeneratorOptions} from "./src/types/Generator";
+import {createTypescriptEndpointsAndModels} from "./src/Generator";
 
 const jsonFilePath = argv[2];
 
